@@ -144,9 +144,9 @@ function App() {
         }
         break;
       case "Isometric":
-        for (let i = 0; i < size.height; i += gap) {
+        for (let i = 0; i < size.height * 2; i += gap) {
           draw
-            .line(0, i, Math.min(gap * c * 2, size.width), Math.max(0))
+            .line(0, i, Math.hypot(size.width, size.height), i)
             .stroke({ color: lineColor, width: lineWidth })
             .transform({ origin: { x: 0, y: i }, rotate: -30 });
           draw
