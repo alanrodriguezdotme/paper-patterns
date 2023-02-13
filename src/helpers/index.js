@@ -27,3 +27,6 @@ export function getForegroundColor(bgHex) {
   var lum = luminance(rgb.r, rgb.g, rgb.b);
   return lum > 0.14285 ? "#000000" : "#ffffff";
 }
+
+export const initialColor =
+  "#" + ((Math.random() * 0xffffff) << 0).toString(16);

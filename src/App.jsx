@@ -6,7 +6,11 @@ import { useEffect, useRef, useState } from "react";
 import Button from "./components/Button";
 import Dropdown from "./components/Dropdown";
 import RadioButton from "./components/RadioButton";
-// import Checkbox from "./components/Checkbox";
+import HorizontalLines from "./controls/HorizontalLines";
+import VerticalLines from "./controls/VerticalLines";
+import SquareGrid from "./controls/SquareGrid";
+import DotGrid from "./controls/DotGrid";
+import IsometricGrid from "./controls/IsometricGrid";
 
 const initialColor = "#" + ((Math.random() * 0xffffff) << 0).toString(16);
 const paperSizes = [
@@ -18,7 +22,7 @@ const designs = [
   "Vertical lines",
   "Square grid",
   "Dot grid",
-  "Isometric",
+  "Isometric grid",
 ];
 
 function App() {
@@ -29,13 +33,7 @@ function App() {
     width: paperSize.short,
     height: paperSize.long,
   });
-  // const [margin, setMargin] = useState(0);
-  // const [showMarginBorder, setShowMarginBorder] = useState(true);
   const [design, setDesign] = useState("Horizontal lines");
-  const [gap, setGap] = useState(15);
-  const [dotSize, setDotSize] = useState(5);
-  const [lineColor, setLineColor] = useState(initialColor);
-  const [lineWidth, setLineWidth] = useState(1.0);
   const paperRef = useRef();
 
   useEffect(() => {
@@ -65,104 +63,29 @@ function App() {
     // Hack to fix React from rendering a second SVG element
     let svgElements = document.getElementsByClassName("svg");
     svgElements?.length > 1 && svgElements[0].remove();
-
-    if (draw) {
-      renderShapes(design);
-      // showMarginBorder &&
-      //   draw
-      //     .rect(size.width * 2, size.height * 2)
-      //     .move(margin, margin)
-      //     .fill("none")
-      //     .stroke({ color: lineColor, width: lineWidth });
-    }
   }, [draw]);
 
-  useEffect(() => {
-    if (draw !== null) {
-      draw.clear();
-      renderShapes(design);
-      // showMarginBorder &&
-      //   draw
-      //     .rect(size.width * 2, size.height * 2)
-      //     .move(margin, margin)
-      //     .fill("none")
-      //     .stroke({ color: lineColor, width: lineWidth });
-    }
-  }, [
-    design,
-    gap,
-    lineColor,
-    size,
-    dotSize,
-    orientation,
-    lineWidth,
-    // margin,
-    // showMarginBorder,
-  ]);
-
-  function renderShapes(type) {
+  function renderDesign(type) {
     switch (type) {
       case "Horizontal lines":
-        for (let i = gap; i < size.height; i += gap) {
-          draw
-            .line(0, i, size.width, i)
-            .stroke({ color: lineColor, width: lineWidth });
-        }
-        break;
+        return (
+          <HorizontalLines draw={draw} size={size} paperSize={paperSize} />
+        );
       case "Vertical lines":
-        for (let i = gap; i < size.width; i += gap) {
-          draw
-            .line(i, 0, i, size.height)
-            .stroke({ color: lineColor, width: lineWidth });
-        }
-        break;
+        return <VerticalLines draw={draw} size={size} paperSize={paperSize} />;
       case "Square grid":
-        for (let i = gap; i < size.height; i += gap) {
-          draw
-            .line(0, i, size.width, i)
-            .stroke({ color: lineColor, width: lineWidth });
-        }
-        for (let i = gap; i < size.width; i += gap) {
-          draw
-            .line(i, 0, i, size.height)
-            .stroke({ color: lineColor, width: lineWidth });
-        }
-        break;
+        return (
+          <SquareGrid
+            draw={draw}
+            orientation={orientation}
+            size={size}
+            paperSize={paperSize}
+          />
+        );
       case "Dot grid":
-        for (
-          let y = dotSize / 2 + gap;
-          y < size.height - dotSize / 2 - gap;
-          y += gap
-        ) {
-          for (
-            let x = dotSize / 2 + gap;
-            x < size.width - (gap - dotSize);
-            x += gap
-          ) {
-            draw.circle(dotSize).center(x, y).fill(lineColor);
-          }
-        }
-        break;
-      case "Isometric":
-        for (let i = 0; i < size.height * 2; i += gap) {
-          draw
-            .line(0, i, Math.hypot(size.width, size.height), i)
-            .stroke({ color: lineColor, width: lineWidth })
-            .transform({ origin: { x: 0, y: i }, rotate: -30 });
-          draw
-            .line(
-              0,
-              i - size.height,
-              Math.hypot(size.width, size.height),
-              i - size.height
-            )
-            .stroke({ color: lineColor, width: lineWidth })
-            .transform({
-              origin: { x: 0, y: i - size.height },
-              rotate: 30,
-            });
-        }
-        break;
+        return <DotGrid draw={draw} size={size} paperSize={paperSize} />;
+      case "Isometric grid":
+        return <IsometricGrid draw={draw} size={size} paperSize={paperSize} />;
       default:
         return;
     }
@@ -211,30 +134,6 @@ function App() {
               options={paperSizes.map((size) => size.name)}
             />
           </div>
-          {/* <div className="flex flex-col gap-1">
-            <label htmlFor="margin">Page margin</label>
-            <input
-              type="number"
-              value={margin}
-              min={0}
-              max={size.height / 2}
-              onChange={(e) => {
-                if (parseInt(e.target.value) > 0) {
-                  setMargin(parseInt(e.target.value));
-                } else {
-                  setMargin(0);
-                }
-              }}
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="gap">Margin border</label>
-            <Checkbox
-              label="Show"
-              checked={showMarginBorder}
-              onChange={() => setShowMarginBorder(!showMarginBorder)}
-            />
-          </div> */}
           <div className="flex flex-col gap-1">
             <label htmlFor="orientation">Orientation</label>
             <div className="flex flex-col gap-1">
@@ -262,65 +161,9 @@ function App() {
               options={designs}
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="gap">Gap</label>
-            <input
-              type="number"
-              value={gap}
-              min={design === "Dot grid" ? 10 : 2}
-              max={size.height / 2}
-              onChange={(e) => {
-                if (
-                  parseInt(e.target.value) > (design === "Dot grid" ? 10 : 2)
-                ) {
-                  setGap(parseInt(e.target.value));
-                } else {
-                  setGap(design === "Dot grid" ? 10 : 2);
-                }
-              }}
-            />
-          </div>
-          {design === "Dot grid" && (
-            <div className="flex flex-col gap-1">
-              <label htmlFor="gap">Dot size</label>
-              <input
-                type="number"
-                value={dotSize}
-                min="2"
-                max={size.height / 10}
-                onChange={(e) => setDotSize(parseInt(e.target.value))}
-              />
-            </div>
-          )}
-          {(design === "Horizontal lines" ||
-            design === "Vertical lines" ||
-            design === "Square grid" ||
-            design === "Isometric") && (
-            <div className="flex flex-col gap-1">
-              <label htmlFor="gap">Line width</label>
-              <input
-                type="number"
-                value={lineWidth}
-                step="any"
-                min={0.1}
-                max={paperSize.long / 10}
-                onChange={(e) => setLineWidth(parseInt(e.target.value))}
-              />
-            </div>
-          )}
-          <div className="flex flex-col gap-1">
-            <label htmlFor="lineColor">Color</label>
-            <input
-              className="w-full h-8"
-              type="color"
-              value={lineColor}
-              onChange={(e) => setLineColor(e.target.value)}
-            />
-          </div>
+          {renderDesign(design)}
           <div className="flex gap-4">
-            <Button lineColor={lineColor} onClick={() => createPdf()}>
-              Download PDF
-            </Button>
+            <Button onClick={() => createPdf()}>Download PDF</Button>
             {/* <Button
               onClick={() => printJS({ printable: "paper", type: "html" })}
             >
