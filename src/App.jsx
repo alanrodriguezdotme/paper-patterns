@@ -1,11 +1,12 @@
 import { SVG } from "@svgdotjs/svg.js";
 import jsPDF from "jspdf";
 import "svg2pdf.js";
-import printJS from "print-js";
+// import printJS from "print-js";
 import { useEffect, useRef, useState } from "react";
 import Button from "./components/Button";
 import Dropdown from "./components/Dropdown";
 import RadioButton from "./components/RadioButton";
+// import Checkbox from "./components/Checkbox";
 
 const initialColor = "#" + ((Math.random() * 0xffffff) << 0).toString(16);
 const paperSizes = [
@@ -16,16 +17,25 @@ const designs = [
   "Horizontal lines",
   "Vertical lines",
   "Square grid",
-  "Isometric grid",
+  "Dot grid",
+  "Isometric",
 ];
 
 function App() {
   const [draw, setDraw] = useState(null);
   const [orientation, setOrientation] = useState("portrait");
+  const [paperSize, setPaperSize] = useState(paperSizes[0]);
+  const [size, setSize] = useState({
+    width: paperSize.short,
+    height: paperSize.long,
+  });
+  // const [margin, setMargin] = useState(0);
+  // const [showMarginBorder, setShowMarginBorder] = useState(true);
   const [design, setDesign] = useState("Horizontal lines");
   const [gap, setGap] = useState(15);
-  const [size, setSize] = useState(paperSizes[0]);
+  const [dotSize, setDotSize] = useState(5);
   const [lineColor, setLineColor] = useState(initialColor);
+  const [lineWidth, setLineWidth] = useState(1.0);
   const paperRef = useRef();
 
   useEffect(() => {
@@ -33,7 +43,7 @@ function App() {
       setDraw(
         SVG()
           .addTo(paperRef.current)
-          .size(size.short, size.long)
+          .size(size.width, size.height)
           .addClass("svg")
       );
     }
@@ -42,62 +52,113 @@ function App() {
   useEffect(() => {
     if (draw !== null) {
       if (orientation === "portrait") {
-        draw.size(size.short, size.long);
+        setSize({ width: paperSize.short, height: paperSize.long });
+        draw.size(paperSize.short, paperSize.long);
       } else {
-        draw.size(size.long, size.short);
+        setSize({ width: paperSize.long, height: paperSize.short });
+        draw.size(paperSize.long, paperSize.short);
       }
     }
-  }, [orientation, size]);
+  }, [orientation, paperSize]);
 
   useEffect(() => {
     // Hack to fix React from rendering a second SVG element
     let svgElements = document.getElementsByClassName("svg");
     svgElements?.length > 1 && svgElements[0].remove();
 
-    draw && renderShapes(design);
+    if (draw) {
+      renderShapes(design);
+      // showMarginBorder &&
+      //   draw
+      //     .rect(size.width * 2, size.height * 2)
+      //     .move(margin, margin)
+      //     .fill("none")
+      //     .stroke({ color: lineColor, width: lineWidth });
+    }
   }, [draw]);
 
   useEffect(() => {
     if (draw !== null) {
       draw.clear();
       renderShapes(design);
+      // showMarginBorder &&
+      //   draw
+      //     .rect(size.width * 2, size.height * 2)
+      //     .move(margin, margin)
+      //     .fill("none")
+      //     .stroke({ color: lineColor, width: lineWidth });
     }
-  }, [design, gap, lineColor, size]);
+  }, [
+    design,
+    gap,
+    lineColor,
+    size,
+    dotSize,
+    orientation,
+    lineWidth,
+    // margin,
+    // showMarginBorder,
+  ]);
 
   function renderShapes(type) {
     switch (type) {
       case "Horizontal lines":
-        for (let i = 0; i < size.long; i += gap) {
-          draw.line(0, i, size.long, i).stroke({ color: lineColor, width: 1 });
+        for (let i = gap; i < size.height; i += gap) {
+          draw
+            .line(0, i, size.width, i)
+            .stroke({ color: lineColor, width: lineWidth });
         }
         break;
       case "Vertical lines":
-        for (let i = 0; i < size.long; i += gap) {
-          draw.line(i, 0, i, size.long).stroke({ color: lineColor, width: 1 });
+        for (let i = gap; i < size.width; i += gap) {
+          draw
+            .line(i, 0, i, size.height)
+            .stroke({ color: lineColor, width: lineWidth });
         }
         break;
       case "Square grid":
-        for (let i = 0; i < size.long; i += gap) {
-          draw.line(0, i, size.long, i).stroke({ color: lineColor, width: 1 });
-          draw.line(i, 0, i, size.long).stroke({ color: lineColor, width: 1 });
+        for (let i = gap; i < size.height; i += gap) {
+          draw
+            .line(0, i, size.width, i)
+            .stroke({ color: lineColor, width: lineWidth });
+        }
+        for (let i = gap; i < size.width; i += gap) {
+          draw
+            .line(i, 0, i, size.height)
+            .stroke({ color: lineColor, width: lineWidth });
         }
         break;
-      case "Isometric grid":
-        for (let i = 0; i < size.long * 2; i += gap) {
+      case "Dot grid":
+        for (
+          let y = dotSize / 2 + gap;
+          y < size.height - dotSize / 2 - gap;
+          y += gap
+        ) {
+          for (
+            let x = dotSize / 2 + gap;
+            x < size.width - (gap - dotSize);
+            x += gap
+          ) {
+            draw.circle(dotSize).center(x, y).fill(lineColor);
+          }
+        }
+        break;
+      case "Isometric":
+        for (let i = 0; i < size.height; i += gap) {
           draw
-            .line(0, i, Math.hypot(size.short, size.long), i)
-            .stroke({ color: lineColor, width: 1 })
+            .line(0, i, Math.min(gap * c * 2, size.width), Math.max(0))
+            .stroke({ color: lineColor, width: lineWidth })
             .transform({ origin: { x: 0, y: i }, rotate: -30 });
           draw
             .line(
               0,
-              i - size.long,
-              Math.hypot(size.short, size.long),
-              i - size.long
+              i - size.height,
+              Math.hypot(size.width, size.height),
+              i - size.height
             )
-            .stroke({ color: lineColor, width: 1 })
+            .stroke({ color: lineColor, width: lineWidth })
             .transform({
-              origin: { x: 0, y: i - size.long },
+              origin: { x: 0, y: i - size.height },
               rotate: 30,
             });
         }
@@ -128,8 +189,8 @@ function App() {
     >
       <div className="flex gap-12">
         <div
-          className="flex items-center justify-center"
-          style={{ width: size.long, height: size.long }}
+          className="flex justify-center items-start"
+          style={{ width: size.width, height: size.height }}
         >
           <div
             ref={paperRef}
@@ -143,11 +204,37 @@ function App() {
             <Dropdown
               value={size.name}
               onChange={(e) =>
-                setSize(paperSizes.find((size) => size.name === e.target.value))
+                setPaperSize(
+                  paperSizes.find((size) => size.name === e.target.value)
+                )
               }
               options={paperSizes.map((size) => size.name)}
             />
           </div>
+          {/* <div className="flex flex-col gap-1">
+            <label htmlFor="margin">Page margin</label>
+            <input
+              type="number"
+              value={margin}
+              min={0}
+              max={size.height / 2}
+              onChange={(e) => {
+                if (parseInt(e.target.value) > 0) {
+                  setMargin(parseInt(e.target.value));
+                } else {
+                  setMargin(0);
+                }
+              }}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="gap">Margin border</label>
+            <Checkbox
+              label="Show"
+              checked={showMarginBorder}
+              onChange={() => setShowMarginBorder(!showMarginBorder)}
+            />
+          </div> */}
           <div className="flex flex-col gap-1">
             <label htmlFor="orientation">Orientation</label>
             <div className="flex flex-col gap-1">
@@ -180,13 +267,49 @@ function App() {
             <input
               type="number"
               value={gap}
-              min="2"
-              max={size.long / 2}
-              onChange={(e) => setGap(parseInt(e.target.value))}
+              min={design === "Dot grid" ? 10 : 2}
+              max={size.height / 2}
+              onChange={(e) => {
+                if (
+                  parseInt(e.target.value) > (design === "Dot grid" ? 10 : 2)
+                ) {
+                  setGap(parseInt(e.target.value));
+                } else {
+                  setGap(design === "Dot grid" ? 10 : 2);
+                }
+              }}
             />
           </div>
+          {design === "Dot grid" && (
+            <div className="flex flex-col gap-1">
+              <label htmlFor="gap">Dot size</label>
+              <input
+                type="number"
+                value={dotSize}
+                min="2"
+                max={size.height / 10}
+                onChange={(e) => setDotSize(parseInt(e.target.value))}
+              />
+            </div>
+          )}
+          {(design === "Horizontal lines" ||
+            design === "Vertical lines" ||
+            design === "Square grid" ||
+            design === "Isometric") && (
+            <div className="flex flex-col gap-1">
+              <label htmlFor="gap">Line width</label>
+              <input
+                type="number"
+                value={lineWidth}
+                step="any"
+                min={0.1}
+                max={paperSize.long / 10}
+                onChange={(e) => setLineWidth(parseInt(e.target.value))}
+              />
+            </div>
+          )}
           <div className="flex flex-col gap-1">
-            <label htmlFor="lineColor">Line color</label>
+            <label htmlFor="lineColor">Color</label>
             <input
               className="w-full h-8"
               type="color"
