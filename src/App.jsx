@@ -62,7 +62,7 @@ function App() {
       draw.clear();
       renderShapes(design);
     }
-  }, [design, gap, lineColor]);
+  }, [design, gap, lineColor, size]);
 
   function renderShapes(type) {
     switch (type) {
@@ -195,7 +195,9 @@ function App() {
             />
           </div>
           <div className="flex gap-4">
-            <Button onClick={() => createPdf()}>Download PDF</Button>
+            <Button lineColor={lineColor} onClick={() => createPdf()}>
+              Download PDF
+            </Button>
             {/* <Button
               onClick={() => printJS({ printable: "paper", type: "html" })}
             >
