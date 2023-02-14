@@ -1,14 +1,24 @@
 import { useEffect, useState } from "react";
 import { initialColor } from "../helpers";
 
-export default function HorizontalLines({ draw, size, paperSize }) {
-  const [gap, setGap] = useState(15);
-  const [lineColor, setLineColor] = useState(initialColor);
-  const [lineWidth, setLineWidth] = useState(1.0);
+export default function HorizontalLines({ draw, size, paperSize, template }) {
+  const [gap, setGap] = useState(template ? template.gap : 15);
+  const [lineColor, setLineColor] = useState(
+    template ? template.lineColor : initialColor
+  );
+  const [lineWidth, setLineWidth] = useState(template ? template.lineWidth : 1);
 
   useEffect(() => {
     draw !== null && drawLines();
   }, [draw, lineColor, gap, lineWidth, size]);
+
+  useEffect(() => {
+    if (draw && template !== null && template.design === "Horizontal lines") {
+      setGap(template.gap);
+      setLineColor(template.lineColor);
+      setLineWidth(template.lineWidth);
+    }
+  }, [template]);
 
   function drawLines() {
     draw.clear();

@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { initialColor } from "../helpers";
 
 export default function DotGrid({ draw, size, paperSize }) {
-  const [gap, setGap] = useState(15);
+  const [gap, setGap] = useState(16);
   const [lineColor, setLineColor] = useState(initialColor);
-  const [dotSize, setDotSize] = useState(4);
+  const [dotSize, setDotSize] = useState(3);
 
   useEffect(() => {
     draw !== null && drawLines();

@@ -1,13 +1,9 @@
 import { getForegroundColor } from "../helpers";
 
-export default function Button({ children, onClick, lineColor }) {
+export default function Button({ children, onClick, color }) {
   return (
     <button
-      className=" hover:bg-zinc-400 dark:hover:bg-zinc-700 py-3 px-4 text-sm font-medium uppercase"
-      style={{
-        backgroundColor: lineColor ? lineColor : "#666666",
-        color: getForegroundColor(lineColor ? lineColor : "#666666"),
-      }}
+      className="bg-zinc-800 dark:bg-zinc-200 hover:bg-zinc-600 dark:hover:bg-zinc-400 py-3 px-4 text-sm font-medium uppercase text-white dark:text-zinc-900"
       onClick={onClick}
     >
       {children}

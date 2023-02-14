@@ -11,8 +11,9 @@ import VerticalLines from "./controls/VerticalLines";
 import SquareGrid from "./controls/SquareGrid";
 import DotGrid from "./controls/DotGrid";
 import IsometricGrid from "./controls/IsometricGrid";
+import { templates } from "./templates";
+import Handwriting from "./controls/Handwriting";
 
-const initialColor = "#" + ((Math.random() * 0xffffff) << 0).toString(16);
 const paperSizes = [
   { name: "Letter", ratio: 1.294, short: 612, long: 612 * 1.294 },
   { name: "A4", ratio: 1.4142, short: 595, long: 595 * 1.4142 },
@@ -23,6 +24,14 @@ const designs = [
   "Square grid",
   "Dot grid",
   "Isometric grid",
+  "Handwriting",
+];
+
+const templateNames = [
+  "None",
+  "College ruled",
+  "Wide ruled",
+  "Handwriting practice",
 ];
 
 function App() {
@@ -33,7 +42,10 @@ function App() {
     width: paperSize.short,
     height: paperSize.long,
   });
-  const [design, setDesign] = useState("Horizontal lines");
+  const [design, setDesign] = useState(
+    designs[Math.floor(Math.random() * (designs.length - 1))]
+  );
+  const [template, setTemplate] = useState(null);
   const paperRef = useRef();
 
   useEffect(() => {
@@ -46,6 +58,13 @@ function App() {
       );
     }
   }, []);
+
+  useEffect(() => {
+    if (draw && template) {
+      draw.clear();
+      setDesign(template.design);
+    }
+  }, [template]);
 
   useEffect(() => {
     if (draw !== null) {
@@ -69,10 +88,22 @@ function App() {
     switch (type) {
       case "Horizontal lines":
         return (
-          <HorizontalLines draw={draw} size={size} paperSize={paperSize} />
+          <HorizontalLines
+            draw={draw}
+            size={size}
+            paperSize={paperSize}
+            template={template}
+          />
         );
       case "Vertical lines":
-        return <VerticalLines draw={draw} size={size} paperSize={paperSize} />;
+        return (
+          <VerticalLines
+            draw={draw}
+            size={size}
+            paperSize={paperSize}
+            template={template}
+          />
+        );
       case "Square grid":
         return (
           <SquareGrid
@@ -80,12 +111,29 @@ function App() {
             orientation={orientation}
             size={size}
             paperSize={paperSize}
+            template={template}
           />
         );
       case "Dot grid":
-        return <DotGrid draw={draw} size={size} paperSize={paperSize} />;
+        return (
+          <DotGrid
+            draw={draw}
+            size={size}
+            paperSize={paperSize}
+            template={template}
+          />
+        );
       case "Isometric grid":
-        return <IsometricGrid draw={draw} size={size} paperSize={paperSize} />;
+        return (
+          <IsometricGrid
+            draw={draw}
+            size={size}
+            paperSize={paperSize}
+            template={template}
+          />
+        );
+      case "Handwriting":
+        return <Handwriting draw={draw} size={size} template={template} />;
       default:
         return;
     }
@@ -99,7 +147,6 @@ function App() {
       width,
       height,
     ]);
-    console.log({ svg, width, height });
     await pdf.svg(svg, { width, height }).then(() => {
       pdf.save(`${design}.pdf`);
     });
@@ -121,8 +168,8 @@ function App() {
             className="border border-zinc-400 bg-white"
           />
         </div>
-        <div id="controls" className="flex flex-col gap-6">
-          <div className="flex flex-col gap-1">
+        <div id="controls" className="flex flex-col" style={{ minWidth: 240 }}>
+          <div className="flex flex-col gap-1 pb-4">
             <label htmlFor="type">Paper size</label>
             <Dropdown
               value={size.name}
@@ -134,9 +181,9 @@ function App() {
               options={paperSizes.map((size) => size.name)}
             />
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 py-4">
             <label htmlFor="orientation">Orientation</label>
-            <div className="flex flex-col gap-1">
+            <div className="flex gap-4">
               <RadioButton
                 label="Portrait"
                 name="orientation"
@@ -153,22 +200,43 @@ function App() {
               />
             </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="design">Design</label>
+          <div className="flex flex-col gap-1 py-4">
+            <label htmlFor="template">Template</label>
             <Dropdown
-              value={design}
-              onChange={(e) => setDesign(e.target.value)}
-              options={designs}
+              value={template === null ? "None" : template.name}
+              onChange={(e) =>
+                setTemplate(
+                  e.target.value !== "None"
+                    ? templates.find(
+                        (template) => template.name === e.target.value
+                      )
+                    : null
+                )
+              }
+              options={templateNames}
             />
           </div>
-          {renderDesign(design)}
-          <div className="flex gap-4">
-            <Button onClick={() => createPdf()}>Download PDF</Button>
-            {/* <Button
+          <div className="flex flex-col gap-1 my-4 py-4 border-t border-slate-500">
+            <div className="flex flex-col gap-1 py-4">
+              <label htmlFor="design">Design</label>
+              <Dropdown
+                value={design}
+                onChange={(e) => {
+                  setDesign(e.target.value);
+                  setTemplate(null);
+                }}
+                options={designs}
+              />
+            </div>
+            {renderDesign(design)}
+            <div className="flex gap-4 py-4">
+              <Button onClick={() => createPdf()}>Download PDF</Button>
+              {/* <Button
               onClick={() => printJS({ printable: "paper", type: "html" })}
             >
               Print
             </Button> */}
+            </div>
           </div>
         </div>
       </div>
