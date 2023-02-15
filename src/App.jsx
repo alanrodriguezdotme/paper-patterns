@@ -1,7 +1,7 @@
 import { SVG } from "@svgdotjs/svg.js";
 import jsPDF from "jspdf";
 import "svg2pdf.js";
-// import printJS from "print-js";
+import printJS from "print-js";
 import { useEffect, useRef, useState } from "react";
 import Button from "./components/Button";
 import Dropdown from "./components/Dropdown";
@@ -38,12 +38,15 @@ function App() {
   const [draw, setDraw] = useState(null);
   const [orientation, setOrientation] = useState("portrait");
   const [paperSize, setPaperSize] = useState(paperSizes[0]);
+  const [margin, setMargin] = useState(20);
+  const [group, setGroup] = useState(null);
+  const [maskGroup, setMaskGroup] = useState(null);
   const [size, setSize] = useState({
     width: paperSize.short,
     height: paperSize.long,
   });
   const [design, setDesign] = useState(
-    designs[Math.floor(Math.random() * (designs.length - 1))]
+    designs[Math.floor(Math.random() * designs.length)]
   );
   const [template, setTemplate] = useState(null);
   const paperRef = useRef();
@@ -58,13 +61,6 @@ function App() {
       );
     }
   }, []);
-
-  useEffect(() => {
-    if (draw && template) {
-      draw.clear();
-      setDesign(template.design);
-    }
-  }, [template]);
 
   useEffect(() => {
     if (draw !== null) {
@@ -82,15 +78,70 @@ function App() {
     // Hack to fix React from rendering a second SVG element
     let svgElements = document.getElementsByClassName("svg");
     svgElements?.length > 1 && svgElements[0].remove();
+
+    if (draw) {
+      if (!group) {
+        let g = draw.group();
+        setGroup(g);
+      }
+      if (!maskGroup) {
+        let mg = draw.group();
+        setMaskGroup(mg);
+      }
+    }
   }, [draw]);
+
+  useEffect(() => {
+    if (template) {
+      setDesign(template.design);
+    }
+  }, [template]);
+
+  useEffect(() => {
+    console.log({ margin, maskGroup });
+    if (draw && maskGroup) {
+      drawMask(maskGroup);
+    }
+  }, [margin, size, maskGroup]);
+
+  function drawMask(group) {
+    group.clear();
+    let path = `M 0 0 L ${size.width} 0 L ${size.width} ${size.height} L 0 ${
+      size.height
+    } L 0 0 M ${margin} ${margin} L ${size.width - margin} ${margin} L ${
+      size.width - margin
+    } ${size.height - margin} L ${margin} ${
+      size.height - margin
+    } L ${margin} ${margin}`;
+
+    group
+      .path(path)
+      .fill("white")
+      .stroke({ width: 1, color: "none" })
+      .attr("fill-rule", "evenodd");
+  }
+
+  // function drawMask(group) {
+  //   group.clear();
+  //   let mask = draw.mask();
+  //   let maskOuterRect = draw.rect(size.width, size.height).fill("#fff");
+  //   let maskInnerRect = draw
+  //     .rect(size.width - margin * 2, size.height - margin * 2)
+  //     .move(margin, margin)
+  //     .fill("#000");
+  //   let rect = draw.rect(size.width, size.height).fill("#fff");
+  //   mask.add(maskOuterRect).add(maskInnerRect);
+  //   rect.maskWith(mask);
+  //   group.add(mask).add(rect);
+  // }
 
   function renderDesign(type) {
     switch (type) {
       case "Horizontal lines":
         return (
           <HorizontalLines
-            draw={draw}
             size={size}
+            group={group}
             paperSize={paperSize}
             template={template}
           />
@@ -98,7 +149,7 @@ function App() {
       case "Vertical lines":
         return (
           <VerticalLines
-            draw={draw}
+            group={group}
             size={size}
             paperSize={paperSize}
             template={template}
@@ -107,8 +158,7 @@ function App() {
       case "Square grid":
         return (
           <SquareGrid
-            draw={draw}
-            orientation={orientation}
+            group={group}
             size={size}
             paperSize={paperSize}
             template={template}
@@ -117,7 +167,7 @@ function App() {
       case "Dot grid":
         return (
           <DotGrid
-            draw={draw}
+            group={group}
             size={size}
             paperSize={paperSize}
             template={template}
@@ -126,14 +176,14 @@ function App() {
       case "Isometric grid":
         return (
           <IsometricGrid
-            draw={draw}
+            group={group}
             size={size}
             paperSize={paperSize}
             template={template}
           />
         );
       case "Handwriting":
-        return <Handwriting draw={draw} size={size} template={template} />;
+        return <Handwriting group={group} size={size} template={template} />;
       default:
         return;
     }
@@ -170,18 +220,6 @@ function App() {
         </div>
         <div id="controls" className="flex flex-col" style={{ minWidth: 240 }}>
           <div className="flex flex-col gap-1 pb-4">
-            <label htmlFor="type">Paper size</label>
-            <Dropdown
-              value={size.name}
-              onChange={(e) =>
-                setPaperSize(
-                  paperSizes.find((size) => size.name === e.target.value)
-                )
-              }
-              options={paperSizes.map((size) => size.name)}
-            />
-          </div>
-          <div className="flex flex-col gap-1 py-4">
             <label htmlFor="orientation">Orientation</label>
             <div className="flex gap-4">
               <RadioButton
@@ -199,6 +237,30 @@ function App() {
                 onChange={(e) => setOrientation(e.target.value)}
               />
             </div>
+          </div>
+          <div className="flex flex-col gap-1 py-4">
+            <label htmlFor="type">Paper size</label>
+            <Dropdown
+              value={size.name}
+              onChange={(e) =>
+                setPaperSize(
+                  paperSizes.find((size) => size.name === e.target.value)
+                )
+              }
+              options={paperSizes.map((size) => size.name)}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="margin">Margin</label>
+            <input
+              type="number"
+              value={margin}
+              min={2}
+              max={paperSize.short / 2}
+              onChange={(e) => {
+                setMargin(e.target.value);
+              }}
+            />
           </div>
           <div className="flex flex-col gap-1 py-4">
             <label htmlFor="template">Template</label>
@@ -232,10 +294,10 @@ function App() {
             <div className="flex gap-4 py-4">
               <Button onClick={() => createPdf()}>Download PDF</Button>
               {/* <Button
-              onClick={() => printJS({ printable: "paper", type: "html" })}
-            >
-              Print
-            </Button> */}
+                onClick={() => printJS({ printable: "paper", type: "html" })}
+              >
+                Print
+              </Button> */}
             </div>
           </div>
         </div>

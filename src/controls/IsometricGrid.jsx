@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react";
 import { initialColor } from "../helpers";
 
-export default function IsometricGrid({ draw, size, paperSize }) {
-  const [gap, setGap] = useState(15);
+export default function IsometricGrid({ group, size, paperSize }) {
+  const [gap, setGap] = useState(20);
   const [lineColor, setLineColor] = useState(initialColor);
-  const [lineWidth, setLineWidth] = useState(1.0);
+  const [lineWidth, setLineWidth] = useState(1);
 
   useEffect(() => {
-    draw !== null && drawLines();
-  }, [draw, lineColor, gap, lineWidth, size]);
+    group && drawLines();
+  }, [group, lineColor, gap, lineWidth, size]);
 
   function drawLines() {
-    draw.clear();
+    group.clear();
     for (let i = 0; i < size.height * 2; i += gap) {
-      draw
+      group
         .line(0, i, Math.hypot(size.width, size.height), i)
         .stroke({ color: lineColor, width: lineWidth })
         .transform({ origin: { x: 0, y: i }, rotate: -30 });
-      draw
+      group
         .line(
           0,
           i - size.height,

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { initialColor } from "../helpers";
 
-export default function HorizontalLines({ draw, size, paperSize, template }) {
+export default function HorizontalLines({ group, size, paperSize, template }) {
   const [gap, setGap] = useState(template ? template.gap : 15);
   const [lineColor, setLineColor] = useState(
     template ? template.lineColor : initialColor
@@ -9,11 +9,11 @@ export default function HorizontalLines({ draw, size, paperSize, template }) {
   const [lineWidth, setLineWidth] = useState(template ? template.lineWidth : 1);
 
   useEffect(() => {
-    draw !== null && drawLines();
-  }, [draw, lineColor, gap, lineWidth, size]);
+    group && drawLines();
+  }, [lineColor, gap, lineWidth, size, group]);
 
   useEffect(() => {
-    if (draw && template !== null && template.design === "Horizontal lines") {
+    if (template !== null && template.design === "Horizontal lines") {
       setGap(template.gap);
       setLineColor(template.lineColor);
       setLineWidth(template.lineWidth);
@@ -21,9 +21,9 @@ export default function HorizontalLines({ draw, size, paperSize, template }) {
   }, [template]);
 
   function drawLines() {
-    draw.clear();
+    group.clear();
     for (let i = gap; i < size.height; i += gap) {
-      draw
+      group
         .line(0, i, size.width, i)
         .stroke({ color: lineColor, width: lineWidth });
     }

@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import { initialColor } from "../helpers";
 
-export default function VerticalLines({ draw, size, paperSize }) {
+export default function VerticalLines({ group, size, paperSize }) {
   const [gap, setGap] = useState(15);
   const [lineColor, setLineColor] = useState(initialColor);
   const [lineWidth, setLineWidth] = useState(1.0);
 
   useEffect(() => {
-    draw !== null && drawLines();
-  }, [draw, lineColor, gap, lineWidth, size]);
+    group !== null && drawLines();
+  }, [group, lineColor, gap, lineWidth, size]);
 
   function drawLines() {
-    draw.clear();
+    group.clear();
     for (let i = gap; i < size.width; i += gap) {
-      draw
+      group
         .line(i, 0, i, size.height)
         .stroke({ color: lineColor, width: lineWidth });
     }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { initialColor } from "../helpers";
 
-export default function Handwriting({ draw, size, template }) {
+export default function Handwriting({ group, size, template }) {
   const [amount, setAmount] = useState(template ? template.amount : 10);
   const [lineColor, setLineColor] = useState(
     template ? template.lineColor : initialColor
@@ -14,22 +14,22 @@ export default function Handwriting({ draw, size, template }) {
   const [dashGap, setDashGap] = useState(template ? template.dashGap : 4);
 
   useEffect(() => {
-    draw !== null && drawLines();
-  }, [draw, lineColor, amount, lineWidth, size, height, template]);
+    group && drawLines();
+  }, [group, lineColor, amount, lineWidth, size, height, template]);
 
   function drawLines() {
-    draw.clear();
+    group.clear();
     let section = size.height / amount;
     for (let i = 1; i <= amount; i++) {
       let center = section * i - section / 2;
-      draw
+      group
         .line(0, center, size.width, center)
         .attr({ "stroke-dasharray": `${dash} ${dashGap}` })
         .stroke({ color: lineColor, width: lineWidth });
-      draw
+      group
         .line(0, center - height / 2, size.width, center - height / 2)
         .stroke({ color: lineColor, width: lineWidth + 1 });
-      draw
+      group
         .line(0, center + height / 2, size.width, center + height / 2)
         .stroke({ color: lineColor, width: lineWidth + 1 });
     }

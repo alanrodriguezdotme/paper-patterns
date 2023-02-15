@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { initialColor } from "../helpers";
 
-export default function DotGrid({ draw, size, paperSize }) {
+export default function DotGrid({ group, size, paperSize }) {
   const [gap, setGap] = useState(16);
   const [lineColor, setLineColor] = useState(initialColor);
   const [dotSize, setDotSize] = useState(3);
 
   useEffect(() => {
-    draw !== null && drawLines();
-  }, [draw, lineColor, gap, dotSize, size]);
+    group && drawLines();
+  }, [group, lineColor, gap, dotSize, size]);
 
   function drawLines() {
-    draw.clear();
+    group.clear();
     for (
       let y = dotSize / 2 + gap;
       y < size.height - (gap - dotSize);
@@ -22,7 +22,7 @@ export default function DotGrid({ draw, size, paperSize }) {
         x < size.width - (gap - dotSize);
         x += gap
       ) {
-        draw.circle(dotSize).center(x, y).fill(lineColor);
+        group.circle(dotSize).center(x, y).fill(lineColor);
       }
     }
   }

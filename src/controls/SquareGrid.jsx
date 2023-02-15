@@ -1,24 +1,24 @@
 import { useEffect, useState } from "react";
 import { initialColor } from "../helpers";
 
-export default function SquareGrid({ draw, size, paperSize }) {
+export default function SquareGrid({ group, size, paperSize }) {
   const [gap, setGap] = useState(15);
   const [lineColor, setLineColor] = useState(initialColor);
   const [lineWidth, setLineWidth] = useState(1.0);
 
   useEffect(() => {
-    draw !== null && drawLines();
-  }, [draw, lineColor, gap, lineWidth, size]);
+    group && drawLines();
+  }, [group, lineColor, gap, lineWidth, size]);
 
   function drawLines() {
-    draw.clear();
+    group.clear();
     for (let i = gap; i < size.height; i += gap) {
-      draw
+      group
         .line(0, i, size.width, i)
         .stroke({ color: lineColor, width: lineWidth });
     }
     for (let i = gap; i < size.width; i += gap) {
-      draw
+      group
         .line(i, 0, i, size.height)
         .stroke({ color: lineColor, width: lineWidth });
     }
