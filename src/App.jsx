@@ -1,18 +1,17 @@
 import { SVG } from "@svgdotjs/svg.js";
 import jsPDF from "jspdf";
 import "svg2pdf.js";
-import printJS from "print-js";
+// import printJS from "print-js";
 import { useEffect, useRef, useState } from "react";
 import Button from "./components/Button";
 import Dropdown from "./components/Dropdown";
 import RadioButton from "./components/RadioButton";
-import HorizontalLines from "./controls/HorizontalLines";
-import VerticalLines from "./controls/VerticalLines";
-import SquareGrid from "./controls/SquareGrid";
-import DotGrid from "./controls/DotGrid";
-import IsometricGrid from "./controls/IsometricGrid";
-import { templates } from "./templates";
-import Handwriting from "./controls/Handwriting";
+import HorizontalLines from "./designs/HorizontalLines";
+import VerticalLines from "./designs/VerticalLines";
+import SquareGrid from "./designs/SquareGrid";
+import DotGrid from "./designs/DotGrid";
+import IsometricGrid from "./designs/IsometricGrid";
+import Handwriting from "./designs/Handwriting";
 
 const paperSizes = [
   { name: "Letter", ratio: 1.294, short: 612, long: 612 * 1.294 },
@@ -27,18 +26,11 @@ const designs = [
   "Handwriting",
 ];
 
-const templateNames = [
-  "None",
-  "College ruled",
-  "Wide ruled",
-  "Handwriting practice",
-];
-
 function App() {
   const [draw, setDraw] = useState(null);
   const [orientation, setOrientation] = useState("portrait");
   const [paperSize, setPaperSize] = useState(paperSizes[0]);
-  const [margin, setMargin] = useState(20);
+  const [margin, setMargin] = useState(0);
   const [group, setGroup] = useState(null);
   const [maskGroup, setMaskGroup] = useState(null);
   const [size, setSize] = useState({
@@ -48,7 +40,6 @@ function App() {
   const [design, setDesign] = useState(
     designs[Math.floor(Math.random() * designs.length)]
   );
-  const [template, setTemplate] = useState(null);
   const paperRef = useRef();
 
   useEffect(() => {
@@ -92,13 +83,6 @@ function App() {
   }, [draw]);
 
   useEffect(() => {
-    if (template) {
-      setDesign(template.design);
-    }
-  }, [template]);
-
-  useEffect(() => {
-    console.log({ margin, maskGroup });
     if (draw && maskGroup) {
       drawMask(maskGroup);
     }
@@ -121,69 +105,26 @@ function App() {
       .attr("fill-rule", "evenodd");
   }
 
-  // function drawMask(group) {
-  //   group.clear();
-  //   let mask = draw.mask();
-  //   let maskOuterRect = draw.rect(size.width, size.height).fill("#fff");
-  //   let maskInnerRect = draw
-  //     .rect(size.width - margin * 2, size.height - margin * 2)
-  //     .move(margin, margin)
-  //     .fill("#000");
-  //   let rect = draw.rect(size.width, size.height).fill("#fff");
-  //   mask.add(maskOuterRect).add(maskInnerRect);
-  //   rect.maskWith(mask);
-  //   group.add(mask).add(rect);
-  // }
-
   function renderDesign(type) {
     switch (type) {
       case "Horizontal lines":
         return (
-          <HorizontalLines
-            size={size}
-            group={group}
-            paperSize={paperSize}
-            template={template}
-          />
+          <HorizontalLines size={size} group={group} paperSize={paperSize} />
         );
       case "Vertical lines":
         return (
-          <VerticalLines
-            group={group}
-            size={size}
-            paperSize={paperSize}
-            template={template}
-          />
+          <VerticalLines group={group} size={size} paperSize={paperSize} />
         );
       case "Square grid":
-        return (
-          <SquareGrid
-            group={group}
-            size={size}
-            paperSize={paperSize}
-            template={template}
-          />
-        );
+        return <SquareGrid group={group} size={size} paperSize={paperSize} />;
       case "Dot grid":
-        return (
-          <DotGrid
-            group={group}
-            size={size}
-            paperSize={paperSize}
-            template={template}
-          />
-        );
+        return <DotGrid group={group} size={size} paperSize={paperSize} />;
       case "Isometric grid":
         return (
-          <IsometricGrid
-            group={group}
-            size={size}
-            paperSize={paperSize}
-            template={template}
-          />
+          <IsometricGrid group={group} size={size} paperSize={paperSize} />
         );
       case "Handwriting":
-        return <Handwriting group={group} size={size} template={template} />;
+        return <Handwriting group={group} size={size} />;
       default:
         return;
     }
@@ -250,7 +191,7 @@ function App() {
               options={paperSizes.map((size) => size.name)}
             />
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 pb-4">
             <label htmlFor="margin">Margin</label>
             <input
               type="number"
@@ -262,22 +203,6 @@ function App() {
               }}
             />
           </div>
-          <div className="flex flex-col gap-1 py-4">
-            <label htmlFor="template">Template</label>
-            <Dropdown
-              value={template === null ? "None" : template.name}
-              onChange={(e) =>
-                setTemplate(
-                  e.target.value !== "None"
-                    ? templates.find(
-                        (template) => template.name === e.target.value
-                      )
-                    : null
-                )
-              }
-              options={templateNames}
-            />
-          </div>
           <div className="flex flex-col gap-1 my-4 py-4 border-t border-slate-500">
             <div className="flex flex-col gap-1 py-4">
               <label htmlFor="design">Design</label>
@@ -285,7 +210,6 @@ function App() {
                 value={design}
                 onChange={(e) => {
                   setDesign(e.target.value);
-                  setTemplate(null);
                 }}
                 options={designs}
               />
