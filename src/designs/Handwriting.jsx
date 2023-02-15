@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { initialColor } from "../helpers";
+import { randomColor } from "../helpers";
 
 export default function Handwriting({ group, size, template }) {
   const [amount, setAmount] = useState(template ? template.amount : 10);
   const [lineColor, setLineColor] = useState(
-    template ? template.lineColor : initialColor
+    template ? template.lineColor : randomColor
   );
   const [lineWidth, setLineWidth] = useState(
     template ? template?.lineWidth : 1
@@ -36,8 +36,8 @@ export default function Handwriting({ group, size, template }) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
+    <div className="flex flex-col">
+      <div className="flex flex-col gap-1 p-4">
         <label htmlFor="amount">Amount</label>
         <input
           type="number"
@@ -47,7 +47,7 @@ export default function Handwriting({ group, size, template }) {
           onChange={(e) => setAmount(parseInt(e.target.value))}
         />
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 p-4">
         <label htmlFor="height">Height</label>
         <input
           type="number"
@@ -57,10 +57,10 @@ export default function Handwriting({ group, size, template }) {
           onChange={(e) => setHeight(parseInt(e.target.value))}
         />
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 p-4">
         <label htmlFor="lineColor">Color</label>
         <input
-          className="w-full h-8"
+          className="w-full h-10 border"
           type="color"
           value={lineColor}
           onChange={(e) => setLineColor(e.target.value)}

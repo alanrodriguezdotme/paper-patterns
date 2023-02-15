@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { initialColor } from "../helpers";
+import { randomColor } from "../helpers";
 
 export default function SquareGrid({ group, size, paperSize }) {
   const [gap, setGap] = useState(15);
-  const [lineColor, setLineColor] = useState(initialColor);
+  const [lineColor, setLineColor] = useState(randomColor);
   const [lineWidth, setLineWidth] = useState(1.0);
 
   useEffect(() => {
@@ -25,8 +25,8 @@ export default function SquareGrid({ group, size, paperSize }) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
+    <div className="flex flex-col">
+      <div className="flex flex-col gap-1 p-4">
         <label htmlFor="gap">Gap</label>
         <input
           type="number"
@@ -42,7 +42,7 @@ export default function SquareGrid({ group, size, paperSize }) {
           }}
         />
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 p-4">
         <label htmlFor="gap">Line width</label>
         <input
           type="number"
@@ -53,10 +53,10 @@ export default function SquareGrid({ group, size, paperSize }) {
           onChange={(e) => setLineWidth(parseInt(e.target.value))}
         />
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 p-4">
         <label htmlFor="lineColor">Color</label>
         <input
-          className="w-full h-8"
+          className="w-full h-10 border"
           type="color"
           value={lineColor}
           onChange={(e) => setLineColor(e.target.value)}

@@ -28,7 +28,7 @@ export function getForegroundColor(bgHex) {
   return lum > 0.14285 ? "#000000" : "#ffffff";
 }
 
-export function initialColor() {
+export function randomColor() {
   const hexValues = [
     0,
     1,

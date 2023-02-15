@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Dropdown from "../components/Dropdown";
+import { randomColor } from "../helpers";
 
 const templates = [
   {
@@ -21,7 +22,7 @@ const templates = [
 export default function HorizontalLines({ group, size, paperSize }) {
   const [template, setTemplate] = useState(null);
   const [gap, setGap] = useState(20);
-  const [lineColor, setLineColor] = useState("#ADD8E6");
+  const [lineColor, setLineColor] = useState(randomColor());
   const [lineWidth, setLineWidth] = useState(1);
 
   useEffect(() => {
@@ -46,8 +47,8 @@ export default function HorizontalLines({ group, size, paperSize }) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
+    <div className="flex flex-col">
+      <div className="flex flex-col gap-1 p-4">
         <label htmlFor="template">Template</label>
         <Dropdown
           value={template === null ? "None" : template.name}
@@ -61,7 +62,7 @@ export default function HorizontalLines({ group, size, paperSize }) {
           options={["None", ...templates.map((t) => t.name)]}
         />
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 p-4">
         <label htmlFor="gap">Gap</label>
         <input
           type="number"
@@ -77,7 +78,7 @@ export default function HorizontalLines({ group, size, paperSize }) {
           }}
         />
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 p-4">
         <label htmlFor="gap">Line width</label>
         <input
           type="number"
@@ -88,10 +89,10 @@ export default function HorizontalLines({ group, size, paperSize }) {
           onChange={(e) => setLineWidth(parseInt(e.target.value))}
         />
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 p-4">
         <label htmlFor="lineColor">Color</label>
         <input
-          className="w-full h-8"
+          className="w-full h-10 border"
           type="color"
           value={lineColor}
           onChange={(e) => setLineColor(e.target.value)}

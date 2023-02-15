@@ -146,21 +146,15 @@ function App() {
   return (
     <div
       id="app"
-      className="w-screen h-screen flex items-center justify-center"
+      className="w-screen h-screen flex items-center justify-center bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 overflow-hidden"
     >
-      <div className="flex gap-12">
+      <div className="w-full h-full flex">
         <div
-          className="flex justify-center items-start"
-          style={{ width: size.width, height: size.height }}
+          id="controls"
+          className="flex flex-col h-full border-r border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900 overflow-y-auto"
+          style={{ width: 300 }}
         >
-          <div
-            ref={paperRef}
-            id="paper"
-            className="border border-zinc-400 bg-white"
-          />
-        </div>
-        <div id="controls" className="flex flex-col" style={{ minWidth: 240 }}>
-          <div className="flex flex-col gap-1 pb-4">
+          <div className="flex flex-col gap-1 p-4">
             <label htmlFor="orientation">Orientation</label>
             <div className="flex gap-4">
               <RadioButton
@@ -179,7 +173,7 @@ function App() {
               />
             </div>
           </div>
-          <div className="flex flex-col gap-1 py-4">
+          <div className="flex flex-col gap-1 p-4">
             <label htmlFor="type">Paper size</label>
             <Dropdown
               value={size.name}
@@ -191,7 +185,7 @@ function App() {
               options={paperSizes.map((size) => size.name)}
             />
           </div>
-          <div className="flex flex-col gap-1 pb-4">
+          <div className="flex flex-col gap-1 p-4">
             <label htmlFor="margin">Margin</label>
             <input
               type="number"
@@ -203,8 +197,8 @@ function App() {
               }}
             />
           </div>
-          <div className="flex flex-col gap-1 my-4 py-4 border-t border-slate-500">
-            <div className="flex flex-col gap-1 py-4">
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 p-4">
               <label htmlFor="design">Design</label>
               <Dropdown
                 value={design}
@@ -215,14 +209,28 @@ function App() {
               />
             </div>
             {renderDesign(design)}
-            <div className="flex gap-4 py-4">
-              <Button onClick={() => createPdf()}>Download PDF</Button>
-              {/* <Button
+          </div>
+          <div className="flex gap-4 p-4">
+            <Button fullWidth onClick={() => createPdf()}>
+              Download PDF
+            </Button>
+            {/* <Button
                 onClick={() => printJS({ printable: "paper", type: "html" })}
               >
                 Print
               </Button> */}
-            </div>
+          </div>
+        </div>
+        <div className="flex justify-center items-center flex-grow h-full grow overflow-auto py-12">
+          <div
+            className="flex justify-center items-start"
+            style={{ width: size.width, height: size.height }}
+          >
+            <div
+              ref={paperRef}
+              id="paper"
+              className="border border-zinc-300 dark:border-zinc-900 bg-white"
+            />
           </div>
         </div>
       </div>

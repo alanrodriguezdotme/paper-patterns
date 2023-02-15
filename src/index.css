@@ -20,7 +20,6 @@ body {
   display: flex;
   min-width: 100vw;
   min-height: 100vh;
-  background-color: #eaeaea;
 }
 
 label {
@@ -46,11 +45,12 @@ label {
 textarea,
 select {
   background-color: transparent;
+  border-color: #6b7280;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   body {
     background-color: #222;
     color: #fff;
   }
-}
+} */
