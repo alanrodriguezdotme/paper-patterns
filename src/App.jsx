@@ -38,6 +38,7 @@ function App() {
     height: paperSize.long,
   });
   const [design, setDesign] = useState(
+    // designs[3]
     designs[Math.floor(Math.random() * designs.length)]
   );
   const paperRef = useRef();
@@ -151,7 +152,7 @@ function App() {
       <div className="w-full h-full flex">
         <div
           id="controls"
-          className="flex flex-col h-full border-r border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900 overflow-y-auto"
+          className="flex flex-col h-full drop-shadow-md bg-zinc-100 dark:bg-zinc-900 overflow-y-auto"
           style={{ width: 300 }}
         >
           <div className="flex flex-col gap-1 p-4">
@@ -208,8 +209,8 @@ function App() {
                 options={designs}
               />
             </div>
-            {renderDesign(design)}
           </div>
+          {renderDesign(design)}
           <div className="flex gap-4 p-4">
             <Button fullWidth onClick={() => createPdf()}>
               Download PDF

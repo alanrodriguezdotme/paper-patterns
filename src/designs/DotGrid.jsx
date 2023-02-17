@@ -1,69 +1,134 @@
 import { useEffect, useState } from "react";
+import Dropdown from "../components/Dropdown";
 import { randomColor } from "../helpers";
 
 export default function DotGrid({ group, size, paperSize }) {
   const [gap, setGap] = useState(16);
   const [lineColor, setLineColor] = useState(randomColor);
   const [dotSize, setDotSize] = useState(3);
+  const [position, setPosition] = useState("Top left");
 
   useEffect(() => {
     group && drawLines();
-  }, [group, lineColor, gap, dotSize, size]);
+  }, [group, lineColor, gap, dotSize, size, position]);
 
   function drawLines() {
+    let spaceBetween = dotSize / 2 + gap;
     group.clear();
-    for (
-      let y = dotSize / 2 + gap;
-      y < size.height - (gap - dotSize);
-      y += gap
-    ) {
+    if (position === "Top left") {
       for (
-        let x = dotSize / 2 + gap;
-        x < size.width - (gap - dotSize);
-        x += gap
+        let y = spaceBetween;
+        y < size.height - (gap - dotSize);
+        y += spaceBetween
       ) {
-        group.circle(dotSize).center(x, y).fill(lineColor);
+        for (
+          let x = spaceBetween;
+          x < size.width - (gap - dotSize);
+          x += spaceBetween
+        ) {
+          group.circle(dotSize).center(x, y).fill(lineColor);
+        }
+      }
+    } else {
+      let centerX = size.width / 2;
+      let centerY = size.height / 2;
+      group.circle(dotSize).center(centerX, centerY).fill(lineColor);
+
+      for (let x = spaceBetween; x < centerX; x += spaceBetween) {
+        group
+          .circle(dotSize)
+          .center(centerX + x, centerY)
+          .fill(lineColor);
+        group
+          .circle(dotSize)
+          .center(centerX - x, centerY)
+          .fill(lineColor);
+      }
+
+      for (let y = spaceBetween; y < centerY; y += spaceBetween) {
+        group
+          .circle(dotSize)
+          .center(centerX, centerY + y)
+          .fill(lineColor);
+        group
+          .circle(dotSize)
+          .center(centerX, centerY - y)
+          .fill(lineColor);
+
+        for (let x = spaceBetween; x < centerX; x += spaceBetween) {
+          group
+            .circle(dotSize)
+            .center(centerX + x, centerY + y)
+            .fill(lineColor);
+          group
+            .circle(dotSize)
+            .center(centerX - x, centerY + y)
+            .fill(lineColor);
+          group
+            .circle(dotSize)
+            .center(centerX + x, centerY - y)
+            .fill(lineColor);
+          group
+            .circle(dotSize)
+            .center(centerX - x, centerY - y)
+            .fill(lineColor);
+        }
       }
     }
   }
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-col gap-1 p-4">
-        <label htmlFor="gap">Gap</label>
-        <input
-          type="number"
-          value={gap}
-          min={2}
-          max={size.height / 2}
-          onChange={(e) => {
-            if (parseInt(e.target.value) > 2) {
-              setGap(parseInt(e.target.value));
-            } else {
-              setGap(2);
-            }
-          }}
-        />
+      <div className="flex gap-2 w-full">
+        <div className="grow flex flex-col gap-1 p-4 pr-0 w-1/2">
+          <label htmlFor="gap">Dot size</label>
+          <input
+            className="w-full"
+            type="number"
+            value={dotSize}
+            step="any"
+            min={1}
+            max={paperSize.long / 4}
+            onChange={(e) => setDotSize(parseInt(e.target.value))}
+          />
+        </div>
+        <div className="flex flex-col gap-1 p-4 pl-0 w-1/2">
+          <label htmlFor="color">Color</label>
+          <input
+            className="w-full border"
+            style={{ height: 42 }}
+            type="color"
+            value={lineColor}
+            onChange={(e) => setLineColor(e.target.value)}
+          />
+        </div>
       </div>
-      <div className="flex flex-col gap-1 p-4">
-        <label htmlFor="gap">Dot size</label>
-        <input
-          type="number"
-          value={dotSize}
-          step="any"
-          min={1}
-          max={paperSize.long / 4}
-          onChange={(e) => setDotSize(parseInt(e.target.value))}
-        />
-      </div>
-      <div className="flex flex-col gap-1 p-4">
-        <label htmlFor="lineColor">Color</label>
-        <input
-          className="w-full h-10 border"
-          type="color"
-          value={lineColor}
-          onChange={(e) => setLineColor(e.target.value)}
-        />
+      <div className="flex gap-2 w-full">
+        <div className="grow flex flex-col gap-1 p-4 pr-0 w-1/2">
+          <label htmlFor="gap">Gap</label>
+          <input
+            className="w-full"
+            type="number"
+            value={gap}
+            min={2}
+            max={size.height / 2}
+            onChange={(e) => {
+              if (parseInt(e.target.value) > 2) {
+                setGap(parseInt(e.target.value));
+              } else {
+                setGap(2);
+              }
+            }}
+          />
+        </div>
+        <div className="grow flex flex-col gap-1 p-4 pl-0 w-1/2">
+          <label htmlFor="position">Position</label>
+          <Dropdown
+            value={position}
+            onChange={(e) => setPosition(e.target.value)}
+            options={["Top left", "Center"]}
+          />
+        </div>
       </div>
     </div>
   );

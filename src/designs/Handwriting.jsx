@@ -7,7 +7,7 @@ export default function Handwriting({ group, size, template }) {
     template ? template.lineColor : randomColor
   );
   const [lineWidth, setLineWidth] = useState(
-    template ? template?.lineWidth : 1
+    template ? template?.lineWidth : 2
   );
   const [height, setHeight] = useState(template ? template.height : 40);
   const [dash, setDash] = useState(template ? template.dash : 6);
