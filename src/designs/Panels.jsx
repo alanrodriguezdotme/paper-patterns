@@ -104,9 +104,14 @@ export default function Panels({ group, size, paperSize, margin }) {
           />
         </div>
       </div>
-      <div className="flex gap-2 w-full flex-wrap">
+      <div className="flex w-full flex-wrap">
         {rowPanels.map((row, i) => (
-          <div className={`flex flex-col w-full gap-1 p-4`} key={`panel-${i}`}>
+          <div
+            className={`flex flex-col gap-1 w-1/2 p-4 ${
+              i % 2 === 0 ? "pr-1" : "pl-1"
+            }`}
+            key={`panel-${i}`}
+          >
             <label htmlFor="gap">{`Row ${i + 1} panels`}</label>
             <input
               type="number"

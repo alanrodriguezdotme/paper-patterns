@@ -50,6 +50,7 @@ select {
 
 input[type="color"] {
   padding: 2px;
+  height: 42px;
 }
 
 /* @media (prefers-color-scheme: dark) {
