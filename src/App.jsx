@@ -14,6 +14,7 @@ import IsometricGrid from "./designs/IsometricGrid";
 import Handwriting from "./designs/Handwriting";
 import ConcentricCircles from "./designs/ConcentricCircles";
 import TriangularGrid from "./designs/TriangularGrid";
+import Panels from "./designs/Panels";
 
 const paperSizes = [
   { name: "Letter", ratio: 1.294, short: 612, long: 612 * 1.294 },
@@ -23,6 +24,7 @@ const designs = [
   "Horizontal lines",
   "Vertical lines",
   "Handwriting",
+  "Panels",
   "Square grid",
   "Dot grid",
   "Isometric grid",
@@ -42,7 +44,7 @@ function App() {
     height: paperSize.long,
   });
   const [design, setDesign] = useState(
-    designs[6]
+    designs[3]
     // designs[Math.floor(Math.random() * designs.length)]
   );
   const paperRef = useRef();
@@ -88,6 +90,7 @@ function App() {
   }, [draw]);
 
   useEffect(() => {
+    console.log({ size });
     if (draw && maskGroup) {
       drawMask(maskGroup);
     }
@@ -119,6 +122,15 @@ function App() {
       case "Vertical lines":
         return (
           <VerticalLines group={group} size={size} paperSize={paperSize} />
+        );
+      case "Panels":
+        return (
+          <Panels
+            group={group}
+            size={size}
+            paperSize={paperSize}
+            margin={margin}
+          />
         );
       case "Square grid":
         return <SquareGrid group={group} size={size} paperSize={paperSize} />;
