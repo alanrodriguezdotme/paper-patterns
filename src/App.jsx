@@ -44,8 +44,8 @@ function App() {
     height: paperSize.long,
   });
   const [design, setDesign] = useState(
-    designs[3]
-    // designs[Math.floor(Math.random() * designs.length)]
+    // designs[3]
+    designs[Math.floor(Math.random() * designs.length)]
   );
   const paperRef = useRef();
 
