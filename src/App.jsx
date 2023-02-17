@@ -12,6 +12,8 @@ import SquareGrid from "./designs/SquareGrid";
 import DotGrid from "./designs/DotGrid";
 import IsometricGrid from "./designs/IsometricGrid";
 import Handwriting from "./designs/Handwriting";
+import ConcentricCircles from "./designs/ConcentricCircles";
+import TriangularGrid from "./designs/TriangularGrid";
 
 const paperSizes = [
   { name: "Letter", ratio: 1.294, short: 612, long: 612 * 1.294 },
@@ -20,10 +22,12 @@ const paperSizes = [
 const designs = [
   "Horizontal lines",
   "Vertical lines",
+  "Handwriting",
   "Square grid",
   "Dot grid",
   "Isometric grid",
-  "Handwriting",
+  "Triangular grid",
+  "Concentric cirlces",
 ];
 
 function App() {
@@ -38,8 +42,8 @@ function App() {
     height: paperSize.long,
   });
   const [design, setDesign] = useState(
-    // designs[3]
-    designs[Math.floor(Math.random() * designs.length)]
+    designs[6]
+    // designs[Math.floor(Math.random() * designs.length)]
   );
   const paperRef = useRef();
 
@@ -124,8 +128,16 @@ function App() {
         return (
           <IsometricGrid group={group} size={size} paperSize={paperSize} />
         );
+      case "Triangular grid":
+        return (
+          <TriangularGrid group={group} size={size} paperSize={paperSize} />
+        );
       case "Handwriting":
         return <Handwriting group={group} size={size} />;
+      case "Concentric cirlces":
+        return (
+          <ConcentricCircles group={group} size={size} paperSize={paperSize} />
+        );
       default:
         return;
     }
@@ -147,58 +159,58 @@ function App() {
   return (
     <div
       id="app"
-      className="w-screen h-screen flex items-center justify-center bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 overflow-hidden"
+      className="w-screen h-screen flex items-center justify-center bg-zinc-300 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 overflow-hidden"
     >
       <div className="w-full h-full flex">
         <div
           id="controls"
-          className="flex flex-col h-full drop-shadow-md bg-zinc-100 dark:bg-zinc-900 overflow-y-auto"
+          className="flex flex-col h-full drop-shadow-md bg-zinc-200 dark:bg-zinc-900 overflow-y-auto"
           style={{ width: 300 }}
         >
-          <div className="flex flex-col gap-1 p-4">
-            <label htmlFor="orientation">Orientation</label>
-            <div className="flex gap-4">
-              <RadioButton
-                label="Portrait"
-                name="orientation"
-                value="portrait"
-                checked={orientation === "portrait"}
-                onChange={(e) => setOrientation(e.target.value)}
-              />
-              <RadioButton
-                label="Landscape"
-                name="orientation"
-                value="landscape"
-                checked={orientation === "landscape"}
-                onChange={(e) => setOrientation(e.target.value)}
+          <div className="bg-zinc-100 dark:bg-black pb-2 mb-2 shadow-sm">
+            <div className="flex flex-col gap-1 p-4">
+              <label htmlFor="orientation">Orientation</label>
+              <div className="flex gap-4">
+                <RadioButton
+                  label="Portrait"
+                  name="orientation"
+                  value="portrait"
+                  checked={orientation === "portrait"}
+                  onChange={(e) => setOrientation(e.target.value)}
+                />
+                <RadioButton
+                  label="Landscape"
+                  name="orientation"
+                  value="landscape"
+                  checked={orientation === "landscape"}
+                  onChange={(e) => setOrientation(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1 p-4">
+              <label htmlFor="type">Paper size</label>
+              <Dropdown
+                value={size.name}
+                onChange={(e) =>
+                  setPaperSize(
+                    paperSizes.find((size) => size.name === e.target.value)
+                  )
+                }
+                options={paperSizes.map((size) => size.name)}
               />
             </div>
-          </div>
-          <div className="flex flex-col gap-1 p-4">
-            <label htmlFor="type">Paper size</label>
-            <Dropdown
-              value={size.name}
-              onChange={(e) =>
-                setPaperSize(
-                  paperSizes.find((size) => size.name === e.target.value)
-                )
-              }
-              options={paperSizes.map((size) => size.name)}
-            />
-          </div>
-          <div className="flex flex-col gap-1 p-4">
-            <label htmlFor="margin">Margin</label>
-            <input
-              type="number"
-              value={margin}
-              min={2}
-              max={paperSize.short / 2}
-              onChange={(e) => {
-                setMargin(e.target.value);
-              }}
-            />
-          </div>
-          <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 p-4">
+              <label htmlFor="margin">Margin</label>
+              <input
+                type="number"
+                value={margin}
+                min={2}
+                max={paperSize.short / 2}
+                onChange={(e) => {
+                  setMargin(e.target.value);
+                }}
+              />
+            </div>
             <div className="flex flex-col gap-1 p-4">
               <label htmlFor="design">Design</label>
               <Dropdown

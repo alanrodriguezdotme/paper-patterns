@@ -48,6 +48,10 @@ select {
   border-color: #6b7280;
 }
 
+input[type="color"] {
+  padding: 2px;
+}
+
 /* @media (prefers-color-scheme: dark) {
   body {
     background-color: #222;
