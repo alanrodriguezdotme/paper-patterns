@@ -12,7 +12,7 @@ import SquareGrid from "./designs/SquareGrid";
 import DotGrid from "./designs/DotGrid";
 import IsometricGrid from "./designs/IsometricGrid";
 import Handwriting from "./designs/Handwriting";
-import ConcentricCircles from "./designs/ConcentricCircles";
+import CircularGrid from "./designs/CircularGrid";
 import TriangularGrid from "./designs/TriangularGrid";
 import Panels from "./designs/Panels";
 import { GlobalContext, paperSizes, designs } from "./context";
@@ -139,11 +139,9 @@ function App({ design }) {
         );
       case "handwriting":
         return <Handwriting group={group} size={size} />;
-      case "concentric-circles":
+      case "circular-grid":
         console.log(type);
-        return (
-          <ConcentricCircles group={group} size={size} paperSize={paperSize} />
-        );
+        return <CircularGrid group={group} size={size} paperSize={paperSize} />;
       default:
         return;
     }

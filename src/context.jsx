@@ -40,8 +40,8 @@ export const designs = [
     id: "triangular-grid",
   },
   {
-    name: "Concentric cirlces",
-    id: "concentric-circles",
+    name: "Circular grid",
+    id: "circular-grid",
   },
 ];
 
