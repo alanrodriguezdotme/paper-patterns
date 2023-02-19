@@ -5,6 +5,7 @@ import { randomColor } from "../helpers";
 const templates = [
   {
     name: "College ruled",
+    id: "college-ruled",
     design: "Horizontal lines",
     gap: 20,
     lineWidth: 1,
@@ -12,6 +13,7 @@ const templates = [
   },
   {
     name: "Wide ruled",
+    id: "wide-ruled",
     design: "Horizontal lines",
     gap: 25,
     lineWidth: 1,
@@ -51,15 +53,15 @@ export default function HorizontalLines({ group, size, paperSize }) {
       <div className="flex flex-col gap-1 p-4">
         <label htmlFor="template">Template</label>
         <Dropdown
-          value={template === null ? "None" : template.name}
+          value={template === null ? "none" : template.id}
           onChange={(e) =>
             setTemplate(
-              e.target.value !== "None"
-                ? templates.find((template) => template.name === e.target.value)
+              e.target.value !== "none"
+                ? templates.find((template) => template.id === e.target.value)
                 : null
             )
           }
-          options={["None", ...templates.map((t) => t.name)]}
+          options={[{ name: "None", id: "none" }, ...templates]}
         />
       </div>
       <div className="flex gap-2 w-full">

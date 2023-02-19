@@ -2,11 +2,16 @@ import { useEffect, useState } from "react";
 import Dropdown from "../components/Dropdown";
 import { randomColor } from "../helpers";
 
+const positions = [
+  { name: "Top left", id: "top-left" },
+  { name: "Center", id: "center" },
+];
+
 export default function SquareGrid({ group, size, paperSize }) {
   const [gap, setGap] = useState(15);
   const [lineColor, setLineColor] = useState(randomColor);
   const [lineWidth, setLineWidth] = useState(1.0);
-  const [position, setPosition] = useState("Center");
+  const [position, setPosition] = useState(positions[0]);
   const [centerLineWidth, setCenterLineWidth] = useState(1.0);
 
   useEffect(() => {
@@ -17,7 +22,7 @@ export default function SquareGrid({ group, size, paperSize }) {
     let centerX = size.width / 2;
     let centerY = size.height / 2;
     group.clear();
-    if (position === "Top left") {
+    if (position.id === "top-left") {
       for (let i = gap; i < size.height; i += gap) {
         group
           .line(0, i, size.width, i)
@@ -100,13 +105,15 @@ export default function SquareGrid({ group, size, paperSize }) {
         <div className="grow flex flex-col gap-1 p-4 pl-0 w-1/2">
           <label htmlFor="position">Position</label>
           <Dropdown
-            value={position}
-            onChange={(e) => setPosition(e.target.value)}
-            options={["Top left", "Center"]}
+            value={position.id}
+            onChange={(e) =>
+              setPosition(positions.find((p) => p.id === e.target.value))
+            }
+            options={positions}
           />
         </div>
       </div>
-      {position === "Center" && (
+      {position.id === "center" && (
         <div className="flex flex-col gap-1 p-4">
           <label htmlFor="center line width">Center line widths</label>
           <input

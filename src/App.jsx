@@ -2,7 +2,7 @@ import { SVG } from "@svgdotjs/svg.js";
 import jsPDF from "jspdf";
 import "svg2pdf.js";
 // import printJS from "print-js";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Button from "./components/Button";
 import Dropdown from "./components/Dropdown";
 import RadioButton from "./components/RadioButton";
@@ -15,39 +15,33 @@ import Handwriting from "./designs/Handwriting";
 import ConcentricCircles from "./designs/ConcentricCircles";
 import TriangularGrid from "./designs/TriangularGrid";
 import Panels from "./designs/Panels";
+import { GlobalContext, paperSizes, designs } from "./context";
+import { useNavigate } from "react-router-dom";
 
-const paperSizes = [
-  { name: "Letter", ratio: 1.294, short: 612, long: 612 * 1.294 },
-  { name: "A4", ratio: 1.4142, short: 595, long: 595 * 1.4142 },
-];
-const designs = [
-  "Horizontal lines",
-  "Vertical lines",
-  "Handwriting",
-  "Panels",
-  "Square grid",
-  "Dot grid",
-  "Isometric grid",
-  "Triangular grid",
-  "Concentric cirlces",
-];
-
-function App() {
+function App({ design }) {
   const [draw, setDraw] = useState(null);
-  const [orientation, setOrientation] = useState("portrait");
-  const [paperSize, setPaperSize] = useState(paperSizes[0]);
-  const [margin, setMargin] = useState(0);
   const [group, setGroup] = useState(null);
   const [maskGroup, setMaskGroup] = useState(null);
-  const [size, setSize] = useState({
-    width: paperSize.short,
-    height: paperSize.long,
-  });
-  const [design, setDesign] = useState(
-    // designs[3]
-    designs[Math.floor(Math.random() * designs.length)]
-  );
+  const {
+    selectedDesign,
+    setSelectedDesign,
+    orientation,
+    setOrientation,
+    paperSize,
+    setPaperSize,
+    margin,
+    setMargin,
+    size,
+    setSize,
+  } = useContext(GlobalContext);
   const paperRef = useRef();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (design && design !== selectedDesign.id) {
+      setSelectedDesign(design);
+    }
+  }, [design]);
 
   useEffect(() => {
     if (!draw) {
@@ -90,7 +84,6 @@ function App() {
   }, [draw]);
 
   useEffect(() => {
-    console.log({ size });
     if (draw && maskGroup) {
       drawMask(maskGroup);
     }
@@ -115,15 +108,15 @@ function App() {
 
   function renderDesign(type) {
     switch (type) {
-      case "Horizontal lines":
+      case "horizontal-lines":
         return (
           <HorizontalLines size={size} group={group} paperSize={paperSize} />
         );
-      case "Vertical lines":
+      case "vertical-lines":
         return (
           <VerticalLines group={group} size={size} paperSize={paperSize} />
         );
-      case "Panels":
+      case "panels":
         return (
           <Panels
             group={group}
@@ -132,21 +125,22 @@ function App() {
             margin={margin}
           />
         );
-      case "Square grid":
+      case "square-grid":
         return <SquareGrid group={group} size={size} paperSize={paperSize} />;
-      case "Dot grid":
+      case "dot-grid":
         return <DotGrid group={group} size={size} paperSize={paperSize} />;
-      case "Isometric grid":
+      case "isometric-grid":
         return (
           <IsometricGrid group={group} size={size} paperSize={paperSize} />
         );
-      case "Triangular grid":
+      case "triangular-grid":
         return (
           <TriangularGrid group={group} size={size} paperSize={paperSize} />
         );
-      case "Handwriting":
+      case "handwriting":
         return <Handwriting group={group} size={size} />;
-      case "Concentric cirlces":
+      case "concentric-circles":
+        console.log(type);
         return (
           <ConcentricCircles group={group} size={size} paperSize={paperSize} />
         );
@@ -164,7 +158,7 @@ function App() {
       height,
     ]);
     await pdf.svg(svg, { width, height }).then(() => {
-      pdf.save(`${design}.pdf`);
+      pdf.save(`${selectedDesign}.pdf`);
     });
   }
 
@@ -208,7 +202,7 @@ function App() {
                     paperSizes.find((size) => size.name === e.target.value)
                   )
                 }
-                options={paperSizes.map((size) => size.name)}
+                options={paperSizes}
               />
             </div>
             <div className="flex flex-col gap-1 p-4">
@@ -226,15 +220,15 @@ function App() {
             <div className="flex flex-col gap-1 p-4">
               <label htmlFor="design">Design</label>
               <Dropdown
-                value={design}
+                value={selectedDesign.id}
                 onChange={(e) => {
-                  setDesign(e.target.value);
+                  navigate(`/${e.target.value}`);
                 }}
                 options={designs}
               />
             </div>
           </div>
-          {renderDesign(design)}
+          {renderDesign(selectedDesign.id)}
           <div className="flex gap-4 p-4">
             <Button fullWidth onClick={() => createPdf()}>
               Download PDF
