@@ -8,7 +8,7 @@ const positions = [
 ];
 
 export default function DotGrid({ group, size, paperSize }) {
-  const [gap, setGap] = useState(16);
+  const [gap, setGap] = useState(18);
   const [lineColor, setLineColor] = useState(randomColor);
   const [dotSize, setDotSize] = useState(3);
   const [position, setPosition] = useState("Top left");
@@ -18,19 +18,10 @@ export default function DotGrid({ group, size, paperSize }) {
   }, [group, lineColor, gap, dotSize, size, position]);
 
   function drawLines() {
-    let spaceBetween = dotSize / 2 + gap;
     group.clear();
-    if (position.id === "top-left") {
-      for (
-        let y = spaceBetween;
-        y < size.height - (gap - dotSize);
-        y += spaceBetween
-      ) {
-        for (
-          let x = spaceBetween;
-          x < size.width - (gap - dotSize);
-          x += spaceBetween
-        ) {
+    if (position.id === "center") {
+      for (let y = gap; y < size.height - gap; y += gap) {
+        for (let x = gap; x < size.width - gap; x += gap) {
           group.circle(dotSize).center(x, y).fill(lineColor);
         }
       }
@@ -39,7 +30,7 @@ export default function DotGrid({ group, size, paperSize }) {
       let centerY = size.height / 2;
       group.circle(dotSize).center(centerX, centerY).fill(lineColor);
 
-      for (let x = spaceBetween; x < centerX; x += spaceBetween) {
+      for (let x = gap; x < centerX; x += gap) {
         group
           .circle(dotSize)
           .center(centerX + x, centerY)
@@ -50,7 +41,7 @@ export default function DotGrid({ group, size, paperSize }) {
           .fill(lineColor);
       }
 
-      for (let y = spaceBetween; y < centerY; y += spaceBetween) {
+      for (let y = gap; y < centerY; y += gap) {
         group
           .circle(dotSize)
           .center(centerX, centerY + y)
@@ -60,7 +51,7 @@ export default function DotGrid({ group, size, paperSize }) {
           .center(centerX, centerY - y)
           .fill(lineColor);
 
-        for (let x = spaceBetween; x < centerX; x += spaceBetween) {
+        for (let x = gap; x < centerX; x += gap) {
           group
             .circle(dotSize)
             .center(centerX + x, centerY + y)
