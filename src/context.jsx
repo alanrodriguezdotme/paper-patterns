@@ -56,8 +56,8 @@ export default function GlobalContextProvider({ children }) {
   const [paperSize, setPaperSize] = useState(paperSizes[0]);
   const [margin, setMargin] = useState(0);
   const [size, setSize] = useState({
-    width: paperSize.short,
-    height: paperSize.long,
+    width: paperSizes[0].short,
+    height: paperSizes[0].long,
   });
 
   return (

@@ -194,10 +194,10 @@ function App({ design }) {
             <div className="flex flex-col gap-1 p-4">
               <label htmlFor="type">Paper size</label>
               <Dropdown
-                value={size.name}
+                value={paperSize.id}
                 onChange={(e) =>
                   setPaperSize(
-                    paperSizes.find((size) => size.name === e.target.value)
+                    paperSizes.find((ps) => ps.id === e.target.value)
                   )
                 }
                 options={paperSizes}
@@ -209,7 +209,7 @@ function App({ design }) {
                 type="number"
                 value={margin}
                 min={2}
-                max={paperSize.short / 2}
+                max={paperSize?.short / 2}
                 onChange={(e) => {
                   setMargin(e.target.value);
                 }}
