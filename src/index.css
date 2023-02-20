@@ -53,6 +53,15 @@ input[type="color"] {
   height: 42px;
 }
 
+button {
+  height: 42px;
+  min-width: 42px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #6b7280;
+}
+
 /* @media (prefers-color-scheme: dark) {
   body {
     background-color: #222;

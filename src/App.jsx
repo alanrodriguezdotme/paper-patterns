@@ -17,6 +17,7 @@ import TriangularGrid from "./designs/TriangularGrid";
 import Panels from "./designs/Panels";
 import { GlobalContext, paperSizes, designs } from "./context";
 import { useNavigate } from "react-router-dom";
+import { ArrowsClockwise } from "phosphor-react";
 
 function App({ design }) {
   const [draw, setDraw] = useState(null);
@@ -88,6 +89,10 @@ function App({ design }) {
       drawMask(maskGroup);
     }
   }, [margin, size, maskGroup]);
+
+  function toggleOrientation() {
+    setOrientation(orientation === "portrait" ? "landscape" : "portrait");
+  }
 
   function drawMask(group) {
     group.clear();
@@ -172,36 +177,24 @@ function App({ design }) {
           style={{ width: 300 }}
         >
           <div className="bg-zinc-100 dark:bg-black pb-2 mb-2 shadow-sm">
-            <div className="flex flex-col gap-1 p-4">
-              <label htmlFor="orientation">Orientation</label>
-              <div className="flex gap-4">
-                <RadioButton
-                  label="Portrait"
-                  name="orientation"
-                  value="portrait"
-                  checked={orientation === "portrait"}
-                  onChange={(e) => setOrientation(e.target.value)}
-                />
-                <RadioButton
-                  label="Landscape"
-                  name="orientation"
-                  value="landscape"
-                  checked={orientation === "landscape"}
-                  onChange={(e) => setOrientation(e.target.value)}
+            <div className="flex gap-2 w-full items-flex-end">
+              <div className="flex flex-col gap-1 p-4 pr-0 grow">
+                <label htmlFor="type">Paper size</label>
+                <Dropdown
+                  value={paperSize.id}
+                  onChange={(e) =>
+                    setPaperSize(
+                      paperSizes.find((ps) => ps.id === e.target.value)
+                    )
+                  }
+                  options={paperSizes}
                 />
               </div>
-            </div>
-            <div className="flex flex-col gap-1 p-4">
-              <label htmlFor="type">Paper size</label>
-              <Dropdown
-                value={paperSize.id}
-                onChange={(e) =>
-                  setPaperSize(
-                    paperSizes.find((ps) => ps.id === e.target.value)
-                  )
-                }
-                options={paperSizes}
-              />
+              <div className="flex gap-1 p-4 pl-0 items-end">
+                <button className="square" onClick={() => toggleOrientation()}>
+                  <ArrowsClockwise size={24} />
+                </button>
+              </div>
             </div>
             <div className="flex flex-col gap-1 p-4">
               <label htmlFor="margin">Margin</label>
