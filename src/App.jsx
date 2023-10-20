@@ -145,7 +145,6 @@ function App({ design }) {
       case "handwriting":
         return <Handwriting group={group} size={size} />;
       case "circular-grid":
-        console.log(type);
         return <CircularGrid group={group} size={size} paperSize={paperSize} />;
       default:
         return;
@@ -161,7 +160,7 @@ function App({ design }) {
       height,
     ]);
     await pdf.svg(svg, { width, height }).then(() => {
-      pdf.save(`${selectedDesign}.pdf`);
+      pdf.save(`${selectedDesign.id}-${orientation}.pdf`);
     });
   }
 

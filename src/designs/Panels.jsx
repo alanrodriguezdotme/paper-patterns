@@ -8,7 +8,6 @@ export default function Panels({ group, size, paperSize, margin }) {
   const [rowPanels, setRowPanels] = useState([2, 3, 2]);
 
   useEffect(() => {
-    console.log(size);
     group && drawLines();
   }, [group, lineColor, gap, lineWidth, size, rowPanels, margin]);
 
